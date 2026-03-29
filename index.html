@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Ice Cream Formulator · PAC · Freezing Point · Nutrition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #FEF9E8; color: #3D1F0D; font-size: 14px; line-height: 1.4; }
+        .header { background: #3D1F0D; color: #FEF9E8; padding: 16px 24px 16px 20%; border-bottom: 4px solid #C8874A; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; width: 100%; }
+        .toolbar { background: white; padding: 10px 24px 10px 20%; border-bottom: 1px solid #F1E5C6; display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+        .header-icon { font-size: 2rem; }
+        .header-text h1 { font-size: 1.35rem; font-weight: 600; }
+        .header-text p { font-size: 0.7rem; opacity: 0.85; margin-top: 4px; }
+        .toolbar-btn { padding: 6px 14px; background: #FFFBF4; border: 1.5px solid #F1E5C6; border-radius: 40px; font-size: 0.7rem; font-weight: 500; cursor: pointer; transition: 0.15s; }
+        .toolbar-btn:hover { border-color: #C8874A; background: white; }
+        .container { padding: 20px 20px 20px 8px; max-width: 1400px; margin: 0; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+        @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } .header, .toolbar { padding-left: 10%; } }
+        .card { background: white; border-radius: 20px; box-shadow: 0 4px 16px rgba(61,31,13,0.08); overflow: hidden; margin-bottom: 24px; }
+        .card-header { padding: 14px 18px; border-bottom: 1px solid #F1E5C6; background: linear-gradient(135deg, #fff, #FFFBF4); display: flex; align-items: center; gap: 10px; }
+        .card-header h2 { font-size: 1rem; font-weight: 600; }
+        .card-body { padding: 18px; }
+        .field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 14px; }
+        .field { display: flex; flex-direction: column; gap: 4px; }
+        .field label { font-size: 0.7rem; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.3px; }
+        .field input, .field select { padding: 8px 12px; border: 1.5px solid #F1E5C6; border-radius: 14px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; background: #FFFBF4; }
+        .hint { font-size: 0.65rem; color: #4A5568; margin-top: 2px; }
+        .batch-warning { background: #fff0e0; border-left: 4px solid #C8874A; padding: 8px 12px; margin: 10px 0; border-radius: 12px; font-size: 0.7rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .sync-btn { background: #C8874A; color: white; border: none; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; cursor: pointer; }
+        .csv-zone { background: #FFFBF4; border-radius: 18px; padding: 12px; margin-bottom: 16px; border: 1px dashed #C8874A; }
+        .search-flex { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .search-flex input { flex: 2; padding: 10px; border-radius: 40px; border: 1.5px solid #F1E5C6; }
+        .search-flex select { flex: 1; padding: 10px; border-radius: 40px; }
+        .search-results { max-height: 220px; overflow-y: auto; background: white; border: 1px solid #F1E5C6; border-radius: 16px; }
+        .result-item { padding: 10px 14px; border-bottom: 1px solid #F1E5C6; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.8rem; }
+        .result-item:hover { background: #FFFBF4; }
+        .selected-list { margin-top: 16px; max-height: 400px; overflow-y: auto; }
+        .ingr-card { background: white; border: 1.5px solid #F1E5C6; border-radius: 16px; padding: 10px 12px; margin-bottom: 8px; }
+        .ingr-row-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
+        .ingr-name-cat { font-weight: 700; font-size: 0.85rem; }
+        .ingr-cat { font-size: 0.6rem; color: #4A5568; margin-left: 6px; font-weight: normal; }
+        .ingr-row-bottom { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .ingr-qty { display: flex; align-items: center; gap: 6px; background: #FFFBF4; padding: 4px 8px; border-radius: 40px; }
+        .ingr-qty input { width: 80px; padding: 6px; border: 1px solid #F1E5C6; border-radius: 20px; text-align: center; font-family: monospace; }
+        .ingr-pct { font-size: 0.7rem; font-weight: 500; color: #2D6B55; min-width: 55px; }
+        .remove-ingr { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #C0392B; opacity: 0.6; padding: 0 6px; }
+        .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #FFFBF4; border-radius: 16px; padding: 12px; text-align: center; border: 1px solid #F1E5C6; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; }
+        .stat-label { font-size: 0.6rem; text-transform: uppercase; color: #4A5568; margin-top: 5px; }
+        .freeze-note { background: #EFF6F0; border-left: 4px solid #2D6B55; padding: 12px; border-radius: 14px; margin: 15px 0; text-align: center; }
+        .freeze-temp { font-size: 1.8rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #2D6B55; margin: 5px 0; }
+        .temp-hint { font-size: 0.7rem; color: #4A5568; margin-top: 4px; }
+        .macro-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F1E5C6; font-size: 0.8rem; }
+        .btn-primary { background: #3D1F0D; color: white; border: none; padding: 10px 16px; border-radius: 40px; font-weight: 600; cursor: pointer; width: 100%; }
+        .region-selector { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; justify-content: center; }
+        .region-btn { padding: 4px 12px; background: #FFFBF4; border: 1.5px solid #F1E5C6; border-radius: 30px; font-size: 0.7rem; cursor: pointer; }
+        .region-btn.active { background: #2D6B55; color: white; border-color: #2D6B55; }
+        .nutrition-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; margin-top: 10px; }
+        .nutrition-table th, .nutrition-table td { padding: 6px 8px; border-bottom: 1px solid #F1E5C6; text-align: left; }
+        .nutrition-table td:last-child { text-align: right; font-family: monospace; }
+        #toastMsg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2D6B55; color: white; padding: 8px 20px; border-radius: 40px; font-size: 0.75rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 1000; }
+
+        /* Print label window styles */
+        .print-label-window { font-family: 'Inter', sans-serif; max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .print-label-window h2 { margin-bottom: 12px; }
+        .print-label-window .ingredient-list { margin: 15px 0; padding-left: 20px; }
+        .print-label-window .nutrition-table { width: 100%; margin-top: 15px; }
+        .print-actions { margin-top: 20px; text-align: center; }
+        .print-actions button { padding: 8px 20px; margin: 0 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="header-icon">🍨</div>
+    <div class="header-text">
+        <h1>Ice Cream Formulator  Developed By Nitin Shah</h1>
+        <p>Sweetness Control •• Freezing point •• Serving Temperature •• Nutritional facts by country</p>
+    </div>
+</div>
+<div class="toolbar">
+    <button class="toolbar-btn" id="saveRecipeBtn">💾 Save Recipe</button>
+    <button class="toolbar-btn" id="loadRecipeBtn">📂 Load Recipe</button>
+    <button class="toolbar-btn" id="exportCSVBtn">📎 Export CSV</button>
+    <button class="toolbar-btn" id="printLabelBtn">🏷️ Print Label</button>
+</div>
+<div class="container">
+    <div class="two-col">
+        <div>
+            <div class="card">
+                <div class="card-header"><span>⚙️</span><h2>1. Machine & Batch Size</h2></div>
+                <div class="card-body">
+                    <div class="field-row">
+                        <div class="field"><label>Machine Type</label>
+                            <select id="machineType">
+                                <option value="wand">Wand / Shaver (236g)</option>
+                                <option value="ninja">Ninja Creami (473g)</option>
+                                <option value="creami_deluxe">Creami Deluxe (710g)</option>
+                                <option value="pacojet">Pacojet (800g)</option>
+                                <option value="frozen_bowl">Frozen Bowl (650g)</option>
+                                <option value="batch" selected>Batch Freezer (1000g)</option>
+                                <option value="continuous">Continuous Freezer (1000g)</option>
+                                <option value="softserve">Soft Serve (2000g)</option>
+                                <option value="popsicle">Popsicle (1000g)</option>
+                                <option value="nochurn">No-Churn (1000g)</option>
+                            </select>
+                        </div>
+                        <div class="field"><label>Batch Size (g)</label><input type="number" id="batchSize" value="1000" step="50"></div>
+                        <div class="field"><label>Overrun %</label><input type="number" id="overrun" value="80" step="5"></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field"><label>Process Type</label><select id="processType"><option value="hot">Hot process</option><option value="cold">Cold process</option></select></div>
+                        <div class="field"><label>Storage Temp (°C)</label><input type="number" id="storageTemp" value="-11" step="1"></div>
+                        <div class="field"><label>Shelf life (months)</label><input type="number" id="shelfLife" value="3"></div>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label>🎯 Target frozen water %</label>
+                            <input type="number" id="frozenWaterTarget" value="75" step="5">
+                            <div class="hint">💡 Standard: 75% frozen water = good scoopability.</div>
+                        </div>
+                        <div class="field"><label>Serving size (g)</label><input type="number" id="servingSize" value="100" step="10"></div>
+                    </div>
+                    <div id="batchWarning" class="batch-warning" style="display:none;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span>📂</span><h2>2. Ingredient database (CSV)</h2></div>
+                <div class="card-body">
+                    <div class="csv-zone">
+                        <label for="csvUpload">📁 Upload your Ingredients.csv →</label>
+                        <input type="file" id="csvUpload" accept=".csv">
+                        <p style="font-size:0.65rem; margin-top:8px;">✓ Default database loaded (<span id="ingCount">0</span> ingredients). Upload your own CSV to replace.</p>
+                    </div>
+                    <div class="search-area">
+                        <div class="search-flex">
+                            <input type="text" id="searchInput" placeholder="Search ingredient...">
+                            <select id="categoryFilter"><option value="">All categories</option></select>
+                        </div>
+                        <div class="search-results" id="searchResultsList"></div>
+                    </div>
+                    <div style="margin:12px 0 6px; display: flex; justify-content: space-between;"><span style="font-weight:600;">📋 Selected ingredients</span><button class="toolbar-btn" id="clearAllBtn" style="padding:4px 12px;">Clear all</button></div>
+                    <div class="selected-list" id="selectedIngredientsContainer"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card">
+                <div class="card-header"><span>📊</span><h2>Formulation analysis</h2></div>
+                <div class="card-body" id="resultsPanel"><div style="text-align:center; padding:40px;">Add ingredients → auto calculate</div></div>
+                <div style="padding:12px 18px 18px;"><button class="btn-primary" id="recalcBtn">⟳ Recalculate</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="toastMsg"></div>
+
+<script>
+    // ---------- GLOBAL ----------
+    let ingredientMaster = [];
+    let selectedIngredients = [];
+    let currentRegion = 'USA';
+
+    const DV = {
+        USA: { energy:2000, fat:70, satFat:20, carbs:300, sugar:90, fiber:25, protein:50, salt:6, calcium:800 },
+        EU: { energy:2000, fat:70, satFat:20, carbs:300, sugar:90, fiber:25, protein:50, salt:6, calcium:800 },
+        India: { energy:2000, fat:60, satFat:20, carbs:300, sugar:90, fiber:30, protein:60, salt:5, calcium:600 }
+    };
+
+    // ---------- CSV PARSING ----------
+    function parseCSVtoIngredients(csvText) {
+        const lines = csvText.trim().split(/\r?\n/);
+        if (lines.length < 2) return [];
+        const headers = lines[0].split(',').map(h => h.trim());
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const values = lines[i].split(',').map(v => v.trim());
+            let obj = {};
+            headers.forEach((h, idx) => {
+                let val = values[idx] || '';
+                if (h === 'Name' || h === 'Category') obj[h] = val;
+                else { let num = parseFloat(val); obj[h] = isNaN(num) ? 0 : num; }
+            });
+            if (obj.Name && obj.Name !== '') data.push(obj);
+        }
+        return data;
+    }
+
+    function loadIngredientDatabase(csvContent, preserveSelected = true) {
+        const newMaster = parseCSVtoIngredients(csvContent);
+        if (newMaster.length === 0) { showToast("CSV has no valid ingredients", true); return false; }
+        const oldSelectedNames = selectedIngredients.map(i => i.name);
+        ingredientMaster = newMaster;
+        document.getElementById('ingCount').innerText = ingredientMaster.length;
+        const cats = new Set(ingredientMaster.map(i => i.Category).filter(c => c && c !== ''));
+        const catSelect = document.getElementById('categoryFilter');
+        catSelect.innerHTML = '<option value="">All categories</option>';
+        cats.forEach(c => { catSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+        if (preserveSelected && oldSelectedNames.length) {
+            const newSelected = [];
+            for (let old of selectedIngredients) {
+                const match = ingredientMaster.find(ing => ing.Name === old.name);
+                if (match) newSelected.push({ ...match, name: match.Name, quantity: old.quantity });
+            }
+            selectedIngredients = newSelected;
+        } else { selectedIngredients = []; }
+        renderSelectedList();
+        filterIngredients();
+        computeAll();
+        checkBatchMatch();
+        showToast(`Loaded ${ingredientMaster.length} ingredients`, false);
+        return true;
+    }
+
+    // Default CSV (full set) – includes Glycemic Index as last column
+    const DEFAULT_CSV = `Name,Category,Energy,Water,Total fat,Saturated fat,Trans fat,Milk fat,Cacao fat,Other fat,Cholesterol,Sodium,Salt,Alcohol,Carbohydrates,Fiber,Total sugars,Polyols,Added sugars,Lactose,Protein,Total solids,Other solids,Cacao solids,MSNF,Vitamin C Mg,VitaminD,Calcium,Iron,Potassium,Magnesium,Chloride,PAC,POD,HF,Rate(Kg),Source,Glycemic Index
+Milk 3.5% Fat -A2,Dairy,62,88,3.5,0,0,3.5,0,0,0,0,0,0,4.7,0,4.73,0,0,4.73,3,12,0.8,0,8.5,0,0,110,0,0,0,0,4.73,0.76,0,34,34
+Cream 35% Fat,Dairy,494,59.09,35,22,0,35,0,0,75,25,0.06,0,3.19,0,1.96,0,0,3.19,2.11,40.91,0.55,0,5.85,0,0,57,0,0,0,0,3.19,0.51,0,280,35
+Skim milk powder,Dairy,397.04,1.99,1,0.67,0,1,0,0,0,0,0,0,53,0,52.87,0,0,52.87,34.92,98.01,9.22,0,97,0,0,0,0,0,0,0,52.9,8.5,0,500,32
+Sugar,Sugar,400,0,0,0,0,0,0,0,0,0,0,0,100,0,100,0,100,0,0,100,0,0,0,0,0,0,0,0,0,0,100,100,0,40,100
+Dextrose,Sugar,368,8,0,0,0,0,0,0,0,0,0,0,92,0,4.32,0,92,0,0,92,0,0,0,0,0,0,0,0,0,0,175,71,0,220,100
+Invert sugar / Trimoline,Sugar,290,27.5,0,0,0,0,0,0,0,0,0,0,72.5,0,7.1,0,72.5,0,0,72.5,0,0,0,0,0,0,0,0,0,0,150,100,0,50,50
+Glucose Syrup 23 DE,Sugar,308,20,0,0,0,0,0,0,0,0,0,0,77,0,0,0,23,0,0,80,57,0,0,0,0,0,0,0,0,0,44,18,0,150,100
+Maltodextrin 19DE,Sugar,380,5,0,0,0,0,0,0,0,0,0,0,95,0,7,0,7,0,0,95,88,0,0,0,0,0,0,0,0,0,23,9,0,220,95
+Cocoa powder 11%,Chocolate,344.5,0,11.1,5.56,0,0,11.1,0,0,0,0,0,55.6,33.3,0,0,0,0,22.2,100,66.7,66.7,0,0,0,167,44.4,2220,0,0,0,0,130.05,600,20
+Alcohol 40%,Alcohol,233.73,66.61,0,0,0,0,0,0,0,0,0,33.39,0,0,0,0,0,0,0,33.39,0,0,0,0,0,0,0,0,0,0,247.09,0,0,0,0
+Water,Other,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Xanthan Gum,Stabilizer,315,10,0,0,0,0,0,0,0,0,0,0,80,80,0,0,0,0,0,90,0,0,0,0,0,0,0,0,0,0,0,0,0,1100,0
+Guar Gum,Stabilizer,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,1100,0
+Lecithin,Emulsifier,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,500,0
+Mono & Diglycerides,Emulsifier,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0,0,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0,0,800,0`;
+
+    // ---------- UI Event Binding ----------
+    document.addEventListener('DOMContentLoaded', () => {
+        loadIngredientDatabase(DEFAULT_CSV, false);
+        document.getElementById('csvUpload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => { loadIngredientDatabase(ev.target.result, true); e.target.value = ''; };
+            reader.onerror = () => showToast("Error reading file", true);
+            reader.readAsText(file, 'UTF-8');
+        });
+        document.getElementById('machineType').addEventListener('change', updateBatchSizeFromMachine);
+        document.getElementById('batchSize').addEventListener('input', () => { checkBatchMatch(); computeAll(); });
+        document.getElementById('frozenWaterTarget').addEventListener('input', computeAll);
+        document.getElementById('servingSize').addEventListener('input', computeAll);
+        document.getElementById('searchInput').addEventListener('input', filterIngredients);
+        document.getElementById('categoryFilter').addEventListener('change', filterIngredients);
+        document.getElementById('clearAllBtn').addEventListener('click', clearAllIngredients);
+        document.getElementById('recalcBtn').addEventListener('click', computeAll);
+        document.getElementById('saveRecipeBtn').addEventListener('click', saveRecipe);
+        document.getElementById('loadRecipeBtn').addEventListener('click', openLoadDialog);
+        document.getElementById('exportCSVBtn').addEventListener('click', exportCSVReport);
+        document.getElementById('printLabelBtn').addEventListener('click', printLabel);
+    });
+
+    function filterIngredients() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const category = document.getElementById('categoryFilter').value;
+        let filtered = ingredientMaster.filter(ing => ing.Name.toLowerCase().includes(term));
+        if (category) filtered = filtered.filter(ing => ing.Category === category);
+        const resultsDiv = document.getElementById('searchResultsList');
+        resultsDiv.innerHTML = filtered.slice(0, 40).map(ing => `
+            <div class="result-item" onclick="addIngredient('${ing.Name.replace(/'/g, "\\'")}')">
+                <span><strong>${ing.Name}</strong> <span style="color:#6c5a4b;">(${ing.Category})</span></span>
+                <span style="font-size:0.7rem;">➕</span>
+            </div>
+        `).join('');
+        if(filtered.length === 0) resultsDiv.innerHTML = '<div style="padding:12px; text-align:center;">✨ no match</div>';
+    }
+
+    function addIngredient(name) {
+        const full = ingredientMaster.find(i => i.Name === name);
+        if (!full) return;
+        if (selectedIngredients.some(i => i.name === name)) { showToast(`${name} already added`, true); return; }
+        selectedIngredients.push({ ...full, name: full.Name, quantity: 0 });
+        renderSelectedList();
+        computeAll();
+        checkBatchMatch();
+    }
+
+    function renderSelectedList() {
+        const container = document.getElementById('selectedIngredientsContainer');
+        const batch = parseFloat(document.getElementById('batchSize').value) || 1000;
+        container.innerHTML = selectedIngredients.map((ing, idx) => {
+            const percent = batch > 0 ? (ing.quantity / batch * 100).toFixed(1) : '0.0';
+            return `
+                <div class="ingr-card">
+                    <div class="ingr-row-top">
+                        <div class="ingr-name-cat">${ing.name}<span class="ingr-cat">${ing.Category || ''}</span></div>
+                    </div>
+                    <div class="ingr-row-bottom">
+                        <div class="ingr-qty">
+                            <input type="number" value="${ing.quantity}" step="10" placeholder="g" onchange="updateQty(${idx}, this.value)">
+                            <span>g</span>
+                        </div>
+                        <div class="ingr-pct">${percent}%</div>
+                        <button class="remove-ingr" onclick="removeIngredient(${idx})">✕</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        if(selectedIngredients.length === 0) container.innerHTML = '<div style="padding:12px; text-align:center; color:#aaa;">No ingredients added</div>';
+    }
+
+    function updateQty(idx, val) { selectedIngredients[idx].quantity = parseFloat(val) || 0; renderSelectedList(); computeAll(); checkBatchMatch(); }
+    function removeIngredient(idx) { selectedIngredients.splice(idx,1); renderSelectedList(); computeAll(); checkBatchMatch(); }
+    function clearAllIngredients() { selectedIngredients = []; renderSelectedList(); computeAll(); checkBatchMatch(); }
+
+    function checkBatchMatch() {
+        const batchSize = parseFloat(document.getElementById('batchSize').value) || 1000;
+        const totalWeight = selectedIngredients.reduce((sum, i) => sum + (i.quantity || 0), 0);
+        const warnDiv = document.getElementById('batchWarning');
+        if (Math.abs(totalWeight - batchSize) > 0.1) {
+            warnDiv.style.display = 'flex';
+            warnDiv.innerHTML = `<span>⚠️ Total ingredients weight: ${totalWeight.toFixed(1)} g  |  Batch size: ${batchSize} g. They are not equal.</span>
+                                 <button class="sync-btn" onclick="syncBatchSize()">Set batch size = ${totalWeight.toFixed(0)} g</button>`;
+        } else { warnDiv.style.display = 'none'; }
+    }
+
+    function syncBatchSize() {
+        const totalWeight = selectedIngredients.reduce((sum, i) => sum + (i.quantity || 0), 0);
+        document.getElementById('batchSize').value = totalWeight.toFixed(0);
+        checkBatchMatch();
+        computeAll();
+    }
+
+    function updateBatchSizeFromMachine() {
+        const machine = document.getElementById('machineType').value;
+        const sizes = { wand:236, ninja:473, creami_deluxe:710, pacojet:800, frozen_bowl:650, batch:1000, continuous:1000, softserve:2000, popsicle:1000, nochurn:1000 };
+        document.getElementById('batchSize').value = sizes[machine] || 1000;
+        checkBatchMatch();
+        computeAll();
+    }
+
+    // Helper: get generic ingredient name for label
+    function getGenericName(fullName) {
+        let generic = fullName;
+        generic = generic.replace(/\s*\d+(?:\.\d+)?%?\s*(?:Fat)?/gi, '');
+        generic = generic.replace(/\s*-\s*A2/gi, '');
+        generic = generic.replace(/\s*DE\s*\d+/gi, '');
+        generic = generic.replace(/\s*\d+\s*DE/gi, '');
+        generic = generic.replace(/\bFat\b/gi, '');
+        generic = generic.replace(/\s+/g, ' ').trim();
+        if (generic.toLowerCase().includes('milk') && generic.toLowerCase().includes('skim')) generic = 'Skim Milk';
+        else if (generic.toLowerCase().includes('milk')) generic = 'Milk';
+        else if (generic.toLowerCase().includes('cream')) generic = 'Cream';
+        else if (generic.toLowerCase().includes('butter')) generic = 'Butter';
+        else if (generic.toLowerCase().includes('sugar')) generic = 'Sugar';
+        else if (generic.toLowerCase().includes('dextrose')) generic = 'Dextrose';
+        else if (generic.toLowerCase().includes('invert')) generic = 'Invert Sugar';
+        else if (generic.toLowerCase().includes('glucose syrup')) generic = 'Glucose Syrup';
+        else if (generic.toLowerCase().includes('maltodextrin')) generic = 'Maltodextrin';
+        else if (generic.toLowerCase().includes('cocoa')) generic = 'Cocoa Powder';
+        else if (generic.toLowerCase().includes('alcohol')) generic = 'Alcohol';
+        else if (generic.toLowerCase().includes('water')) generic = 'Water';
+        else if (generic.toLowerCase().includes('xanthan')) generic = 'Xanthan Gum';
+        else if (generic.toLowerCase().includes('guar')) generic = 'Guar Gum';
+        else if (generic.toLowerCase().includes('lecithin')) generic = 'Lecithin';
+        else if (generic.toLowerCase().includes('mono & diglycerides')) generic = 'Mono & Diglycerides';
+        return generic;
+    }
+
+    // Compute nutrition per serving (for label)
+    function computeNutritionPerServing() {
+        if (selectedIngredients.length === 0) return null;
+        const batchSize = parseFloat(document.getElementById('batchSize').value) || 1000;
+        const servingSize = parseFloat(document.getElementById('servingSize').value) || 100;
+        let totals = { weight:0, water:0, fat:0, protein:0, carbs:0, sugar:0, fiber:0, alcohol:0, salt:0, energy:0, calcium:0 };
+        for (let ing of selectedIngredients) {
+            const qty = ing.quantity || 0;
+            if (qty === 0) continue;
+            totals.weight += qty;
+            totals.fat += (ing['Total fat'] || 0) * qty / 100;
+            totals.protein += (ing.Protein || 0) * qty / 100;
+            totals.carbs += (ing.Carbohydrates || 0) * qty / 100;
+            totals.sugar += (ing['Total sugars'] || 0) * qty / 100;
+            totals.fiber += (ing.Fiber || 0) * qty / 100;
+            totals.salt += (ing.Salt || 0) * qty / 100;
+            totals.energy += (ing.Energy || 0) * qty / 100;
+            totals.calcium += (ing.Calcium || 0) * qty / 100;
+        }
+        if (totals.weight === 0) return null;
+        const factor = 100 / totals.weight;
+        const energyPer100 = totals.energy * factor;
+        const fatPer100 = totals.fat * factor;
+        const carbsPer100 = totals.carbs * factor;
+        const sugarPer100 = totals.sugar * factor;
+        const fiberPer100 = totals.fiber * factor;
+        const proteinPer100 = totals.protein * factor;
+        const saltPer100 = totals.salt * factor;
+        const calciumPer100 = totals.calcium * factor;
+        const servingFactor = servingSize / 100;
+        return {
+            servingSize,
+            energy: energyPer100 * servingFactor,
+            fat: fatPer100 * servingFactor,
+            satFat: fatPer100 * servingFactor * 0.6,
+            carbs: carbsPer100 * servingFactor,
+            sugar: sugarPer100 * servingFactor,
+            fiber: fiberPer100 * servingFactor,
+            protein: proteinPer100 * servingFactor,
+            salt: saltPer100 * servingFactor,
+            calcium: calciumPer100 * servingFactor
+        };
+    }
+
+    function printLabel() {
+        if (selectedIngredients.length === 0) { showToast("No ingredients to print", true); return; }
+        const productName = prompt("Enter product name:", "My Ice Cream");
+        if (!productName) return;
+        const batchSize = parseFloat(document.getElementById('batchSize').value) || 1000;
+        const ingWithPercent = selectedIngredients.map(ing => ({
+            generic: getGenericName(ing.name),
+            percent: (ing.quantity / batchSize) * 100
+        })).sort((a,b) => b.percent - a.percent);
+        const ingredientLines = ingWithPercent.map(ing => `${ing.generic} (${ing.percent.toFixed(1)}%)`).join('<br>');
+        const nutrition = computeNutritionPerServing();
+        if (!nutrition) { showToast("Could not compute nutrition", true); return; }
+        const dv = DV[currentRegion];
+        function dvPercent(val, ref) { return ((val / ref) * 100).toFixed(0); }
+        const regionName = currentRegion === 'USA' ? 'USA (%DV)' : (currentRegion === 'EU' ? 'EU (GDA)' : 'India (RDA)');
+        const labelHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head><title>${productName} - Nutrition Label</title>
+            <style>
+                body { font-family: 'Inter', sans-serif; background: white; padding: 20px; }
+                .label-container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+                h2 { margin-bottom: 12px; }
+                .ingredient-list { margin: 15px 0; padding-left: 20px; }
+                .nutrition-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                .nutrition-table th, .nutrition-table td { padding: 6px 8px; border-bottom: 1px solid #ddd; text-align: left; }
+                .nutrition-table td:last-child { text-align: right; }
+                .print-actions { margin-top: 20px; text-align: center; }
+                button { padding: 8px 20px; margin: 0 8px; cursor: pointer; }
+                @media print { .print-actions { display: none; } }
+            </style>
+            </head>
+            <body>
+            <div class="label-container">
+                <h2>${productName}</h2>
+                <p><strong>Ingredients:</strong><br>${ingredientLines}</p>
+                <p><strong>Nutrition Information</strong> (per ${nutrition.servingSize}g serving) – ${regionName}</p>
+                <table class="nutrition-table">
+                    <thead><tr><th>Nutrient</th><th>Amount</th><th>%</th></tr></thead>
+                    <tbody>
+                        <tr><td>Energy</td><td>${nutrition.energy.toFixed(0)} kcal</td><td>${dvPercent(nutrition.energy, dv.energy)}%</td></tr>
+                        <tr><td>Total Fat</td><td>${nutrition.fat.toFixed(1)} g</td><td>${dvPercent(nutrition.fat, dv.fat)}%</td></tr>
+                        <tr><td>Saturated Fat</td><td>${nutrition.satFat.toFixed(1)} g</td><td>${dvPercent(nutrition.satFat, dv.satFat)}%</td></tr>
+                        <tr><td>Carbohydrates</td><td>${nutrition.carbs.toFixed(1)} g</td><td>${dvPercent(nutrition.carbs, dv.carbs)}%</td></tr>
+                        <tr><td>Total Sugars</td><td>${nutrition.sugar.toFixed(1)} g</td><td>${dvPercent(nutrition.sugar, dv.sugar)}%</td></tr>
+                        <tr><td>Dietary Fiber</td><td>${nutrition.fiber.toFixed(1)} g</td><td>${dvPercent(nutrition.fiber, dv.fiber)}%</td></tr>
+                        <tr><td>Protein</td><td>${nutrition.protein.toFixed(1)} g</td><td>${dvPercent(nutrition.protein, dv.protein)}%</td></tr>
+                        <tr><td>Salt</td><td>${nutrition.salt.toFixed(2)} g</td><td>${dvPercent(nutrition.salt, dv.salt)}%</td></tr>
+                        <tr><td>Calcium</td><td>${nutrition.calcium.toFixed(0)} mg</td><td>${dvPercent(nutrition.calcium, dv.calcium)}%</td></tr>
+                    </tbody>
+                </table>
+                <div class="print-actions">
+                    <button onclick="window.print();">🖨️ Print</button>
+                    <button onclick="window.close();">Close</button>
+                </div>
+            </div>
+            </body>
+            </html>
+        `;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(labelHtml);
+        printWindow.document.close();
+    }
+
+    function saveRecipe() {
+        const name = prompt("Enter recipe name:");
+        if (!name) return;
+        const recipe = {
+            ingredients: selectedIngredients.map(i => ({ name: i.name, quantity: i.quantity })),
+            batchSize: document.getElementById('batchSize').value,
+            frozenWaterTarget: document.getElementById('frozenWaterTarget').value,
+            machineType: document.getElementById('machineType').value,
+            processType: document.getElementById('processType').value,
+            overrun: document.getElementById('overrun').value,
+            storageTemp: document.getElementById('storageTemp').value,
+            shelfLife: document.getElementById('shelfLife').value
+        };
+        let recipes = JSON.parse(localStorage.getItem('iceCreamRecipes') || '{}');
+        recipes[name] = recipe;
+        localStorage.setItem('iceCreamRecipes', JSON.stringify(recipes));
+        showToast(`Recipe "${name}" saved`, false);
+    }
+
+    function openLoadDialog() {
+        const recipes = JSON.parse(localStorage.getItem('iceCreamRecipes') || '{}');
+        const names = Object.keys(recipes);
+        if (names.length === 0) { showToast("No saved recipes", true); return; }
+        const selection = prompt(`Available recipes:\n${names.join(', ')}\n\nEnter exact name:`);
+        if (selection && recipes[selection]) {
+            const rec = recipes[selection];
+            selectedIngredients = rec.ingredients.map(ing => {
+                const full = ingredientMaster.find(i => i.Name === ing.name);
+                return full ? { ...full, name: full.Name, quantity: ing.quantity } : null;
+            }).filter(x => x);
+            document.getElementById('batchSize').value = rec.batchSize;
+            document.getElementById('frozenWaterTarget').value = rec.frozenWaterTarget || 75;
+            document.getElementById('machineType').value = rec.machineType || 'batch';
+            document.getElementById('processType').value = rec.processType || 'hot';
+            document.getElementById('overrun').value = rec.overrun || 80;
+            document.getElementById('storageTemp').value = rec.storageTemp || -11;
+            document.getElementById('shelfLife').value = rec.shelfLife || 3;
+            renderSelectedList();
+            computeAll();
+            checkBatchMatch();
+            showToast(`Loaded "${selection}"`, false);
+        } else { showToast("Recipe not found", true); }
+    }
+
+    function exportCSVReport() {
+        if (selectedIngredients.length === 0) { showToast("No ingredients to export", true); return; }
+        const batchSize = parseFloat(document.getElementById('batchSize').value) || 1000;
+        let csv = "Ingredient,Quantity (g),% of Batch\n";
+        selectedIngredients.forEach(i => {
+            csv += `${i.name},${i.quantity},${(i.quantity/batchSize*100).toFixed(1)}%\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'formulation.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast("CSV exported", false);
+    }
+
+    function computeAll() {
+        if (selectedIngredients.length === 0) {
+            document.getElementById('resultsPanel').innerHTML = '<div style="padding:40px; text-align:center;">➕ Add ingredients to see formulation</div>';
+            return;
+        }
+        const batchSize = parseFloat(document.getElementById('batchSize').value) || 1000;
+        const frozenTarget = parseFloat(document.getElementById('frozenWaterTarget').value) || 75;
+        const servingSize = parseFloat(document.getElementById('servingSize').value) || 100;
+
+        let totals = { weight:0, water:0, fat:0, protein:0, carbs:0, sugar:0, fiber:0, alcohol:0, salt:0, pac:0, pod:0, hf:0, msnf:0, energy:0, calcium:0, stabilizer:0, emulsifier:0, glycemicLoadContrib:0 };
+        for (let ing of selectedIngredients) {
+            const qty = ing.quantity || 0;
+            if (qty === 0) continue;
+            totals.weight += qty;
+            totals.water += (ing.Water || 0) * qty / 100;
+            totals.fat += (ing['Total fat'] || 0) * qty / 100;
+            totals.protein += (ing.Protein || 0) * qty / 100;
+            totals.carbs += (ing.Carbohydrates || 0) * qty / 100;
+            totals.sugar += (ing['Total sugars'] || 0) * qty / 100;
+            totals.fiber += (ing.Fiber || 0) * qty / 100;
+            totals.alcohol += (ing.Alcohol || 0) * qty / 100;
+            totals.salt += (ing.Salt || 0) * qty / 100;
+            totals.pac += (ing.PAC || 0) * qty / 100;
+            totals.pod += (ing.POD || 0) * qty / 100;
+            totals.hf += (ing.HF || 0) * qty / 100;
+            totals.msnf += (ing.MSNF || 0) * qty / 100;
+            totals.energy += (ing.Energy || 0) * qty / 100;
+            totals.calcium += (ing.Calcium || 0) * qty / 100;
+            if (ing.Category === 'Stabilizer') totals.stabilizer += qty;
+            if (ing.Category === 'Emulsifier') totals.emulsifier += qty;
+            // Glycemic Load contribution: (weight_g * GI * Carbs_per_100g) / 10000
+            const gi = ing['Glycemic Index'] || 0;
+            const carbs = ing.Carbohydrates || 0;
+            totals.glycemicLoadContrib += (qty * gi * carbs) / 10000;
+        }
+        if (totals.weight === 0) { document.getElementById('resultsPanel').innerHTML = '<div style="padding:40px; text-align:center;">⚠️ Please enter quantities for ingredients</div>'; return; }
+
+        const factor = 100 / totals.weight;
+        const waterPer100 = totals.water * factor, fatPer100 = totals.fat * factor, proteinPer100 = totals.protein * factor, carbsPer100 = totals.carbs * factor, sugarPer100 = totals.sugar * factor, alcoholPer100 = totals.alcohol * factor, saltPer100 = totals.salt * factor, msnfPer100 = totals.msnf * factor, pacPer100 = totals.pac * factor, podPer100 = totals.pod * factor, hfPer100 = totals.hf * factor, energyPer100 = totals.energy * factor, calciumPer100 = totals.calcium * factor;
+        const stabilizerPercent = (totals.stabilizer / totals.weight) * 100, emulsifierPercent = (totals.emulsifier / totals.weight) * 100;
+        const displayPAC = pacPer100 * 10, displayPOD = podPer100 * 10, displayHF = hfPer100 * 10;
+        const totalSolids = 100 - waterPer100 - alcoholPer100;
+        const freeWater = (100 - totalSolids - alcoholPer100) * (1 - frozenTarget/100);
+        // Glycemic Load per 100g: (totalGlycemicLoadContrib / batchWeight) * 100
+        const glycemicLoadPer100 = (totals.glycemicLoadContrib / totals.weight) * 100;
+
+        function computeFreezingPoint(waterG, pacVal, hfVal, saltVal, msnfVal) {
+            if (waterG <= 0) return -999;
+            const x = (((pacVal - hfVal)/10) + (saltVal * 586 / 100)) / waterG * 100;
+            const poly = 1.8e-9 * Math.pow(x,4) - 1.5486e-6 * Math.pow(x,3) + 0.0004066439 * x*x + 0.0429570733 * x + 0.1564927407;
+            const correction = (msnfVal * 2.37) / waterG;
+            return -poly - correction;
+        }
+        const initFP = computeFreezingPoint(waterPer100, displayPAC, displayHF, saltPer100, msnfPer100);
+        const servingFP = computeFreezingPoint(freeWater, displayPAC, displayHF, saltPer100, msnfPer100);
+
+        // Per serving values
+        const servingFactor = servingSize / 100;
+        const energyPerServing = energyPer100 * servingFactor;
+        const fatPerServing = fatPer100 * servingFactor;
+        const satFatPerServing = fatPerServing * 0.6;
+        const carbsPerServing = carbsPer100 * servingFactor;
+        const sugarPerServing = sugarPer100 * servingFactor;
+        const fiberPerServing = (totals.fiber * factor) * servingFactor;
+        const proteinPerServing = proteinPer100 * servingFactor;
+        const saltPerServing = saltPer100 * servingFactor;
+        const calciumPerServing = calciumPer100 * servingFactor;
+
+        const dv = DV[currentRegion];
+        function dvPercent(val, ref) { return ((val / ref) * 100).toFixed(0); }
+
+        const nutritionHtml = `
+            <div class="region-selector">
+                <button class="region-btn ${currentRegion === 'USA' ? 'active' : ''}" onclick="setRegion('USA')">USA (%DV)</button>
+                <button class="region-btn ${currentRegion === 'EU' ? 'active' : ''}" onclick="setRegion('EU')">EU (GDA)</button>
+                <button class="region-btn ${currentRegion === 'India' ? 'active' : ''}" onclick="setRegion('India')">India (RDA)</button>
+            </div>
+            <table class="nutrition-table">
+                <thead><tr><th>Nutrient</th><th>Per serving (${servingSize}g)</th><th>% ${currentRegion === 'USA' ? 'Daily Value' : (currentRegion === 'EU' ? 'GDA' : 'RDA')}</th></tr></thead>
+                <tbody>
+                    <tr><td>Energy</td><td>${energyPerServing.toFixed(0)} kcal</td><td>${dvPercent(energyPerServing, dv.energy)}%</td></tr>
+                    <tr><td>Total Fat</td><td>${fatPerServing.toFixed(1)} g</td><td>${dvPercent(fatPerServing, dv.fat)}%</td></tr>
+                    <tr><td>Saturated Fat</td><td>${satFatPerServing.toFixed(1)} g</td><td>${dvPercent(satFatPerServing, dv.satFat)}%</td></tr>
+                    <tr><td>Carbohydrates</td><td>${carbsPerServing.toFixed(1)} g</td><td>${dvPercent(carbsPerServing, dv.carbs)}%</td></tr>
+                    <tr><td>Total Sugars</td><td>${sugarPerServing.toFixed(1)} g</td><td>${dvPercent(sugarPerServing, dv.sugar)}%</td></tr>
+                    <tr><td>Dietary Fiber</td><td>${fiberPerServing.toFixed(1)} g</td><td>${dvPercent(fiberPerServing, dv.fiber)}%</td></tr>
+                    <tr><td>Protein</td><td>${proteinPerServing.toFixed(1)} g</td><td>${dvPercent(proteinPerServing, dv.protein)}%</td></tr>
+                    <tr><td>Salt</td><td>${saltPerServing.toFixed(2)} g</td><td>${dvPercent(saltPerServing, dv.salt)}%</td></tr>
+                    <tr><td>Calcium</td><td>${calciumPerServing.toFixed(0)} mg</td><td>${dvPercent(calciumPerServing, dv.calcium)}%</td></tr>
+                </tbody>
+            </table>
+        `;
+
+        const resultsHtml = `
+            <div class="results-grid">
+                <div class="stat-card"><div class="stat-val">${displayPAC.toFixed(2)}</div><div class="stat-label">PAC (×10)</div></div>
+                <div class="stat-card"><div class="stat-val">${displayPOD.toFixed(2)}</div><div class="stat-label">POD (Sweetness ×10)</div></div>
+                <div class="stat-card"><div class="stat-val">${fatPer100.toFixed(2)} g</div><div class="stat-label">Fat (g/100g)</div></div>
+                <div class="stat-card"><div class="stat-val">${msnfPer100.toFixed(2)} g</div><div class="stat-label">MSNF (g/100g)</div></div>
+                <div class="stat-card"><div class="stat-val">${stabilizerPercent.toFixed(2)}%</div><div class="stat-label">Stabilisers</div></div>
+                <div class="stat-card"><div class="stat-val">${emulsifierPercent.toFixed(2)}%</div><div class="stat-label">Emulsifiers</div></div>
+                <div class="stat-card"><div class="stat-val">${totalSolids.toFixed(2)}%</div><div class="stat-label">Total solids</div></div>
+                <div class="stat-card"><div class="stat-val">${waterPer100.toFixed(2)}%</div><div class="stat-label">Total water %</div></div>
+                <div class="stat-card"><div class="stat-val">${carbsPer100.toFixed(2)} g</div><div class="stat-label">Total Carbohydrates</div></div>
+                <div class="stat-card"><div class="stat-val">${proteinPer100.toFixed(2)} g</div><div class="stat-label">Total Protein</div></div>
+                <div class="stat-card"><div class="stat-val">${saltPer100.toFixed(4)} g</div><div class="stat-label">Salt (g/100g)</div></div>
+                <div class="stat-card"><div class="stat-val">${alcoholPer100.toFixed(2)} g</div><div class="stat-label">Alcohol (g/100g)</div></div>
+                <div class="stat-card"><div class="stat-val">${displayHF.toFixed(2)}</div><div class="stat-label">HF (Hardening ×10)</div></div>
+                <div class="stat-card"><div class="stat-val">${glycemicLoadPer100.toFixed(1)}</div><div class="stat-label">Glycemic Load (per 100g)</div></div>
+            </div>
+            <div class="freeze-note">
+                <div><strong>❄️ Initial freezing point (0% frozen water)</strong></div>
+                <div class="freeze-temp">${initFP.toFixed(2)} °C</div>
+                <div><strong>🌡️ Serving temperature @ ${frozenTarget}% frozen water</strong></div>
+                <div class="freeze-temp">${servingFP.toFixed(2)} °C</div>
+                <div class="temp-hint">💡 Target for most products: -14°C to -18°C for firm scoopability.</div>
+                <div><strong>💧 Free water at target:</strong> ${freeWater.toFixed(2)} g / 100g</div>
+                <div><strong>🍦 Estimated energy:</strong> ${energyPer100.toFixed(0)} kcal/100g</div>
+            </div>
+            <div class="macro-row"><span>💰 Batch cost (approx)</span><span>₹ ${(selectedIngredients.reduce((sum,i)=> sum + (i.quantity/1000)*(i['Rate(Kg)']||0),0)).toFixed(2)}</span></div>
+            <div class="macro-row"><span>⚖️ Mass balance check</span><span>${(waterPer100+fatPer100+proteinPer100+carbsPer100+alcoholPer100+saltPer100).toFixed(1)}%</span></div>
+            ${nutritionHtml}
+        `;
+        document.getElementById('resultsPanel').innerHTML = resultsHtml;
+    }
+
+    function setRegion(region) { currentRegion = region; computeAll(); }
+    function showToast(msg, isErr=false) { const toast = document.getElementById('toastMsg'); toast.innerText = msg; toast.style.background = isErr ? '#C0392B' : '#2D6B55'; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 2500); }
+
+    // Make functions global for inline onclick
+    window.addIngredient = addIngredient;
+    window.updateQty = updateQty;
+    window.removeIngredient = removeIngredient;
+    window.syncBatchSize = syncBatchSize;
+    window.setRegion = setRegion;
+    window.computeAll = computeAll;
+</script>
+</body>
+</html>
