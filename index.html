@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Balancer | Precise Visual Recipe Balancer</title>
+    <style>
+        :root {
+            --bg-color: #FDFBF7; /* Warm Vanilla */
+            --text-main: #333333;
+            --text-heading: #4A2E1B; /* Rich Chocolate */
+            --accent-color: #D48135; /* Caramel / Terracotta */
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 20px 5%;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--text-heading);
+            font-size: 1.5rem;
+        }
+
+        header p {
+            margin: 0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .hero {
+            padding: 50px 5%;
+            text-align: center;
+        }
+
+        .hero h2 {
+            color: var(--text-heading);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-graphic {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
+        }
+
+        .store-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .store-badge {
+            background: var(--card-bg);
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 12px;
+            width: 150px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .store-badge span {
+            display: block;
+            font-weight: bold;
+            color: var(--text-heading);
+            margin-bottom: 10px;
+        }
+
+        .video-section {
+            background-color: var(--text-heading);
+            padding: 50px 5%;
+            text-align: center;
+            color: white;
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .features {
+            padding: 60px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            color: var(--text-heading);
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .feature-card h3 {
+            color: var(--text-heading);
+            margin-top: 0;
+        }
+
+        .gallery {
+            padding: 60px 5%;
+            background-color: #F5F1E7;
+            text-align: center;
+        }
+
+        .gallery h2 {
+            color: var(--text-heading);
+            margin-bottom: 30px;
+        }
+
+        .screenshot-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 20px;
+            scrollbar-width: thin;
+        }
+
+        .screenshot-grid img {
+            height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            background-color: var(--text-heading);
+            color: #E0E0E0;
+            padding: 40px 5%;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .legal {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="image_11.png" alt="G-Balancer Logo">
+        <div>
+            <h1>G-Balancer</h1>
+            <p>Precise Visual Recipe Balancer</p>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>Master Your Frozen Dessert Formulations</h2>
+        <img src="image_10.png" alt="G-Balancer Feature Graphic" class="hero-graphic">
+        
+        <p>The ultimate visual workbench for artisan gelato makers, home chefs, and craft scoop shops.</p>
+        
+        <div class="store-links">
+            <div class="store-badge">
+                <span>App Store</span>
+                [Insert QR Code / Badge Here]
+            </div>
+            <div class="store-badge">
+                <span>Google Play</span>
+                [Insert QR Code / Badge Here]
+            </div>
+            <div class="store-badge">
+                <span>Galaxy Store</span>
+                [Insert QR Code / Badge Here]
+            </div>
+        </div>
+    </section>
+
+    <section class="video-section">
+        <h2>See G-Balancer in Action</h2>
+        <div class="video-container">
+            <video controls poster="image_10.png">
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>Unmatched Culinary Diagnostics</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Quick Check Diagnostics</h3>
+                <p>Instantly check Sweetness, Serving Temperature, GI, GL, Brix, RVI, and Mouthfeel Index. Get smart suggestions to adjust sugars and hit your perfect serving temperature.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Auto Stabilisers & Emulsifiers</h3>
+                <p>Automatic calculation of S&amp;E required based on your machine type, ingredient characteristics, and desired product effects. Includes detailed analysis for proteins and gums.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Comprehensive Database</h3>
+                <p>Formulate with a curated 150-ingredient database and scale recipes perfectly with our built-in profiles for a wide range of churners and batch machines.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Advanced Math Included</h3>
+                <p>We handle the heavy lifting: Overrun calculations, Mix-ins additions, exact formulation costs, and Country-specific Nutritional & Allergen legal panels.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Key Metrics Dashboard</h3>
+                <p>Visualize your balance instantly through intuitive gauges, charts, and 18 available languages. Work comfortably in both Dark and Light themes.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery">
+        <h2>Inside the App</h2>
+        <div class="screenshot-grid">
+            <img src="image_3.png" alt="Metrics Dashboard">
+            <img src="image_8.png" alt="Quick Check">
+            <img src="image_5.png" alt="Sensory Indices">
+            <img src="image_6.png" alt="Stabilisers & Emulsifiers">
+            <img src="image_9.png" alt="Evaporation & Mix-ins">
+            <img src="image_2.png" alt="Legal Nutrition">
+            <img src="image_7.png" alt="Machine & Batch">
+            <img src="image_4.png" alt="Themes & Languages">
+        </div>
+    </section>
+
+    <footer>
+        <p>Contact Support: <strong>G-Balancer@outlook.com</strong></p>
+        <div style="margin: 20px 0;">
+            <a href="terms.html">Terms & Conditions</a> | 
+            <a href="privacy.html">Privacy Policy</a>
+        </div>
+        <div class="legal">
+            &copy; 2026 Nitin Shah. All rights reserved. <br>
+            15, Gurukul Society, Nr. Circuit House, Shahibaug, Ahmedabad – 380004, Gujarat, India
+        </div>
+    </footer>
+
+</body>
+</html>
